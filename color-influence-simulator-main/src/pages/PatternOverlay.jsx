@@ -1,40 +1,30 @@
 import React from "react";
+import PropTypes from "prop-types";
 
-// Define the dynamic shapes with their predefined colors
-const shapeProps = {
-  Circle: (key, color) => (
-    <circle key={key} cx="5" cy="5" r="3" fill={color} />
-  ),
-  Square: (key, color) => (
-    <rect key={key} x="0" y="0" width="6" height="6" fill={color} />
-  ),
-  Triangle: (key, color) => (
-    <polygon key={key} points="5,0 10,10 0,10" fill={color} />
-  ),
-};
+// Updated PatternOverlay to accept SVG components dynamically
+const PatternOverlay = ({ ShapeComponent, svgColor = "white" }) => {
+  console.log("ShapeComponent:", ShapeComponent); // Add this for debugging
 
-// Define default colors for each shape
-const shapes = {
-  Circle: "bg-blue-500",
-  Square: "bg-red-500",
-  Triangle: "bg-yellow-500",
-};
-
-const PatternOverlay = ({ shape }) => {
-  if (!shape) return null;
-
-  // Define the color based on the shape
-  const shapeColor = shapes[shape];
+  if (!ShapeComponent) {
+    console.warn("No valid ShapeComponent passed to PatternOverlay!"); // Logging a warning if the component is missing
+    return null;
+  }
 
   return (
     <div className="absolute w-full h-full flex flex-wrap gap-2">
-      {Array(50) // Adjust the number of shapes as needed
+      {Array(25) // Adjust the number of shapes as needed
         .fill(0)
-        .map((_, index) =>
-          shapeProps[shape](index, shapeColor) // Render shapes with the defined color
-        )}
+        .map((_, index) => (
+          <ShapeComponent key={index} className="w-6 h-6" style={{ fill: svgColor }} />
+        ))}
     </div>
   );
+};
+
+// PropTypes validation to ensure the passed component is a valid React component
+PatternOverlay.propTypes = {
+  ShapeComponent: PropTypes.elementType.isRequired, // Ensure it's a valid React component
+  svgColor: PropTypes.string, // Optional prop to pass color to SVG
 };
 
 export default PatternOverlay;
