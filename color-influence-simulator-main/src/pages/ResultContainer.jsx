@@ -1,8 +1,17 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { swirlingLogo } from "../assets";
+import PatternOverlay from "./PatternOverlay";
+import shapes from "../assets/shapes/shapes"; // Import the shapes array
 
-const ResultContainer = ({ color, shape, container, flavor, containerPath, containerViewBox }) => {
+const ResultContainer = ({ color, container, flavor, containerPath, containerViewBox }) => {
   const [patternSize, setPatternSize] = useState(20); // Initial pattern size
+  const location = useLocation();
+
+  // Get selected shape from location state
+  const selectedShapeId = location.state?.shape; 
+
+  const selectedShape = shapes.find((shape) => shape.id === selectedShapeId) || shapes[0]; // Default to the first shape
 
   // Function to handle pattern resizing
   const handleResizePattern = (newSize) => {
@@ -26,7 +35,7 @@ const ResultContainer = ({ color, shape, container, flavor, containerPath, conta
             />
 
             {/* Pattern overlay */}
-            {shape && containerPath && containerViewBox && (
+            {selectedShape.Component && containerPath && containerViewBox && (
               <svg
                 className="absolute inset-0 z-20 w-full h-full"
                 xmlns="http://www.w3.org/2000/svg"
@@ -42,18 +51,8 @@ const ResultContainer = ({ color, shape, container, flavor, containerPath, conta
                     width={patternSize} // Dynamic pattern width
                     height={patternSize} // Dynamic pattern height
                   >
-                    {shape === "Circle" && (
-                      <circle cx={patternSize / 2} cy={patternSize / 2} r={(patternSize / 2) - 2} fill="yellow" />
-                    )}
-                    {shape === "Square" && (
-                      <rect x="5" y="5" width={patternSize - 10} height={patternSize - 10} fill="blue" />
-                    )}
-                    {shape === "Triangle" && (
-                      <polygon
-                        points={`${patternSize / 2},3 ${patternSize / 6},${patternSize - 3} ${patternSize - patternSize / 6},${patternSize - 3}`}
-                        fill="red"
-                      />
-                    )}
+                    {/* Render the selected shape as the pattern */}
+                    <PatternOverlay ShapeComponent={selectedShape.Component} svgColor="white" />
                   </pattern>
 
                   {/* Clip the pattern to the dynamic container path */}

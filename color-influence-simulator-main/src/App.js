@@ -15,7 +15,7 @@ function App() {
   // State management for different selections
   const [flavor, setFlavor] = React.useState(""); // Flavor state
   const [color, setColor] = React.useState("#ffffff"); // Default color state
-  const [shape, setShape] = React.useState(null); // Shape state
+  const [shape, setShape] = React.useState(1); // Shape state
   const [container, setContainer] = React.useState(null); // Container state
   const [containerPath, setContainerPath] = React.useState(""); // Separate state for containerPath
 const [containerViewBox, setContainerViewBox] = React.useState(""); // Separate state for containerViewBox

@@ -1,85 +1,68 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { swirlingLogo } from "../assets";
-
-// Shape options and their styles for selection
-const shapes = [
-  { label: "Circle", style: "w-6 h-6 bg-blue-500 rounded-full" },
-  { label: "Square", style: "w-6 h-6 bg-red-500" },
-  {
-    label: "Triangle",
-    style:
-      "w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-b-[30px] border-b-yellow-500",
-  },
-];
+import PatternOverlay from "./PatternOverlay"; // Updated
+import shapes from "../assets/shapes/shapes"; // Import shapes.js
 
 const ShapeSelector = ({ shape, setShape }) => {
-  const [selectedShape, setSelectedShape] = useState(shape); // Initialize with the current shape
+  const [selectedShape, setSelectedShape] = useState(shape || null);
   const navigate = useNavigate();
 
-  // Handle shape selection and update the parent component's state
-  const handleShapeSelect = (shapeLabel) => {
-    setSelectedShape(shapeLabel);
-    setShape(shapeLabel);
+  const handleShapeSelect = (shapeId) => {
+    setSelectedShape(Number(shapeId)); // Ensure id is a number
+    setShape(Number(shapeId));
   };
+
+  // Find the selected component based on the shapeId
+  const selectedComponent = shapes.find(
+    (shape) => shape.id === selectedShape
+  )?.Component;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
-      <img src={swirlingLogo} width={100} alt="Logo" className="rounded-xl" />
-      <h1 className="text-2xl font-bold mb-4">Choose a Shape</h1>
+      <img src={swirlingLogo} width={120} alt="Logo" className="rounded-xl" />
+      <h1 className="text-3xl font-extrabold mb-4 text-center">
+        Choose a Shape
+      </h1>
 
-      {/* Buttons to choose shape */}
-      <div className="flex space-x-4 mb-8">
-        {shapes.map((shape, index) => (
+      {/* Shape selection buttons */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
+        {shapes.map(({ id, Component }) => (
           <button
-            key={index}
-            onClick={() => handleShapeSelect(shape.label)}
-            className={`px-4 py-2 rounded ${
-              selectedShape === shape.label
-                ? "bg-green-500"
+            key={id}
+            onClick={() => handleShapeSelect(id)}
+            className={`flex items-center justify-center p-4 rounded-lg transition transform ${
+              selectedShape === id
+                ? "bg-green-600 scale-105"
                 : "bg-gray-700 hover:bg-gray-500"
             }`}
+            aria-label={`Select Shape ${id}`}
           >
-            {shape.label}
+            {/* Render the shape component as the button content */}
+            <Component width={60} height={60} />
           </button>
         ))}
       </div>
 
-      {/* Display selected shape with pattern */}
-      <div className="mt-8 flex items-center justify-center p-10 bg-gray-800 rounded-md">
-        {/* SVG pattern */}
-        <svg
-          className="w-32 h-32"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 100 100"
-          style={{ fill: "currentColor" }} // Use currentColor for the container
-        >
-          <defs>
-            <pattern id="dynamicPattern" patternUnits="userSpaceOnUse" width="20" height="20">
-              {/* Render the selected shape inside the pattern */}
-              {selectedShape === "Circle" && (
-                <circle cx="10" cy="10" r="8" fill="yellow" />
-              )}
-              {selectedShape === "Square" && (
-                <rect x="5" y="5" width="10" height="10" fill="blue" />
-              )}
-              {selectedShape === "Triangle" && (
-                <polygon
-                  points="10,3 3,18 17,18"
-                  fill="red"
-                />
-              )}
-            </pattern>
-          </defs>
-          {/* Rectangle with the pattern fill */}
-          <rect x="0" y="0" width="100" height="100" fill="url(#dynamicPattern)" />
-        </svg>
+      {/* Display selected shape */}
+      <div className="mt-6 p-6 rounded-lg bg-gray-900 shadow-lg flex items-center justify-center w-full max-w-xs">
+        {selectedComponent ? (
+          <div className="relative w-40 h-40">
+            <PatternOverlay ShapeComponent={selectedComponent} />
+          </div>
+        ) : (
+          <p className="text-gray-400">No shape selected</p>
+        )}
       </div>
 
-      {/* Next button to navigate to another page */}
+      {/* Next button */}
       <button
-        className="mt-8 px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={() => navigate("/container")}
+        className={`mt-8 px-6 py-3 rounded-lg font-bold transition ${
+          selectedShape
+            ? "bg-green-600 text-white hover:bg-green-700"
+            : "bg-gray-500 text-gray-300 cursor-not-allowed"
+        }`}
+        onClick={() => navigate("/container", { state: { shape: selectedShape } })}
         disabled={!selectedShape}
       >
         Next
