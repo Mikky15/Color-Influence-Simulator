@@ -1,17 +1,23 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { swirlingLogo } from "../assets";
-import PatternOverlay from "./PatternOverlay";
 import shapes from "../assets/shapes/shapes"; // Import the shapes array
 
-const ResultContainer = ({ color, container, flavor, containerPath, containerViewBox }) => {
+const ResultContainer = ({
+  color,
+  container,
+  flavor,
+  containerPath,
+  containerViewBox,
+}) => {
   const [patternSize, setPatternSize] = useState(20); // Initial pattern size
   const location = useLocation();
 
   // Get selected shape from location state
-  const selectedShapeId = location.state?.shape; 
+  const selectedShapeId = location.state?.shape;
 
-  const selectedShape = shapes.find((shape) => shape.id === selectedShapeId) || shapes[0]; // Default to the first shape
+  const selectedShape =
+    shapes.find((shape) => shape.id === selectedShapeId) || shapes[0]; // Default to the first shape
 
   // Function to handle pattern resizing
   const handleResizePattern = (newSize) => {
@@ -34,7 +40,7 @@ const ResultContainer = ({ color, container, flavor, containerPath, containerVie
               style={{ color: color }} // Apply the color to the container SVG
             />
 
-            {/* Pattern overlay */}
+            {/* Render the pattern */}
             {selectedShape.Component && containerPath && containerViewBox && (
               <svg
                 className="absolute inset-0 z-20 w-full h-full"
@@ -51,16 +57,15 @@ const ResultContainer = ({ color, container, flavor, containerPath, containerVie
                     width={patternSize} // Dynamic pattern width
                     height={patternSize} // Dynamic pattern height
                   >
-                    {/* Render the selected shape as the pattern */}
-                    <PatternOverlay ShapeComponent={selectedShape.Component} svgColor="white" />
+                    <selectedShape.Component
+                      width={patternSize}
+                      height={patternSize}
+                    />
                   </pattern>
 
                   {/* Clip the pattern to the dynamic container path */}
                   <clipPath id="containerClip">
-                    <path
-                      className="st0"
-                      d={containerPath} // Use the passed path dynamically
-                    />
+                    <path d={containerPath} />
                   </clipPath>
                 </defs>
 
@@ -130,7 +135,10 @@ const ResultContainer = ({ color, container, flavor, containerPath, containerVie
       </div>
 
       <div className="flex gap-5">
-        <a className="bg-cyan-500 mt-4 px-10 py-3 text-white rounded-full" href="/">
+        <a
+          className="bg-cyan-500 mt-4 px-10 py-3 text-white rounded-full"
+          href="/"
+        >
           START OVER
         </a>
         <a
