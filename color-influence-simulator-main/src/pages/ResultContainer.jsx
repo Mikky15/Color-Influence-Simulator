@@ -1,23 +1,12 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
 import { swirlingLogo } from "../assets";
 import shapes from "../assets/shapes/shapes"; // Import the shapes array
 
-const ResultContainer = ({
-  color,
-  container,
-  flavor,
-  containerPath,
-  containerViewBox,
-}) => {
+const ResultContainer = ({ shape, color, container, flavor, containerPath, containerViewBox }) => {
   const [patternSize, setPatternSize] = useState(20); // Initial pattern size
-  const location = useLocation();
 
-  // Get selected shape from location state
-  const selectedShapeId = location.state?.shape;
-
-  const selectedShape =
-    shapes.find((shape) => shape.id === selectedShapeId) || shapes[0]; // Default to the first shape
+  // If shape is null, do not try to find a shape.
+  const selectedShape = shape ? shapes.find((shapeObj) => shapeObj.id === shape) : null;
 
   // Function to handle pattern resizing
   const handleResizePattern = (newSize) => {
@@ -57,6 +46,7 @@ const ResultContainer = ({
                     width={patternSize} // Dynamic pattern width
                     height={patternSize} // Dynamic pattern height
                   >
+                    {/* Use the selected shape component */}
                     <selectedShape.Component
                       width={patternSize}
                       height={patternSize}
