@@ -10,7 +10,7 @@ const ShapeSelector = ({ shape, setShape }) => {
 
   const handleShapeSelect = (shapeId) => {
     setSelectedShape(Number(shapeId)); // Ensure id is a number
-    setShape(Number(shapeId));
+    setShape(Number(shapeId)); // Update the parent state
   };
 
   // Find the selected component based on the shapeId
