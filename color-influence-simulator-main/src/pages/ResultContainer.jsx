@@ -1,16 +1,32 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { swirlingLogo } from "../assets";
 import shapes from "../assets/shapes/shapes"; // Import the shapes array
 
-const ResultContainer = ({ shape, color, container, flavor, containerPath, containerViewBox }) => {
+const ResultContainer = ({
+  shape,
+  color,
+  container,
+  flavor,
+  containerPath,
+  containerViewBox,
+}) => {
   const [patternSize, setPatternSize] = useState(20); // Initial pattern size
+  const navigate = useNavigate(); // Initialize navigate
 
   // If shape is null, do not try to find a shape.
-  const selectedShape = shape ? shapes.find((shapeObj) => shapeObj.id === shape) : null;
+  const selectedShape = shape
+    ? shapes.find((shapeObj) => shapeObj.id === shape)
+    : null;
 
   // Function to handle pattern resizing
   const handleResizePattern = (newSize) => {
     setPatternSize(newSize); // Update the pattern size state
+  };
+
+  // Function to navigate to the feedback page
+  const navigateToFeedback = () => {
+    navigate("/feedback");
   };
 
   return (
@@ -125,18 +141,15 @@ const ResultContainer = ({ shape, color, container, flavor, containerPath, conta
       </div>
 
       <div className="flex gap-5">
-        <a
-          className="bg-cyan-500 mt-4 px-10 py-3 text-white rounded-full"
-          href="/"
-        >
+        <a className="bg-cyan-500 mt-4 px-10 py-3 text-white rounded-full" href="/">
           START OVER
         </a>
-        <a
+        <button
           className="bg-cyan-500 mt-4 px-10 py-3 text-white rounded-full"
-          href="/thankyou"
+          onClick={navigateToFeedback}
         >
           YES
-        </a>
+        </button>
       </div>
     </div>
   );
