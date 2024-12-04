@@ -6,6 +6,7 @@ import {
   ContainerPage,
   FlavorPage,
   Home,
+  FeedbackCard,
   ResultContainer,
   ShapePage,
   ThankYou,
@@ -25,25 +26,25 @@ function App() {
       <Routes>
         {/* Home route */}
         <Route path="/" element={<Home />} />
-        
+
         {/* Flavor selection route */}
         <Route
           path="/flavor"
           element={<FlavorPage flavor={flavor} setFlavor={setFlavor} />}
         />
-        
+
         {/* Color selection route */}
         <Route
           path="/color"
           element={<ColorPage color={color} setColor={setColor} />}
         />
-        
+
         {/* Shape selection route */}
         <Route
           path="/shape"
           element={<ShapePage shape={shape} setShape={setShape} />}
         />
-        
+
         {/* Container selection route */}
         <Route
           path="/container"
@@ -56,7 +57,7 @@ function App() {
             />
           }
         />
-        
+
         {/* Result route */}
         <Route
           path="/result"
@@ -71,7 +72,10 @@ function App() {
             />
           }
         />
-        
+
+        {/* Feedback route */}
+        <Route path="/feedback" element={<FeedbackCard />} />
+
         {/* Thank You page route */}
         <Route path="/thankyou" element={<ThankYou />} />
       </Routes>
