@@ -13,70 +13,63 @@ import {
 } from "./pages";
 
 function App() {
-  // State management for different selections
-  const [flavor, setFlavor] = React.useState(""); // Flavor state
-  const [color, setColor] = React.useState("#ffffff"); // Default color state
-  const [shape, setShape] = React.useState(null); // Shape state
-  const [container, setContainer] = React.useState(null); // Container state
-  const [containerPath, setContainerPath] = React.useState(""); // Separate state for containerPath
-  const [containerViewBox, setContainerViewBox] = React.useState(""); // Separate state for containerViewBox
+  const [flavor, setFlavor] = React.useState("");
+  const [color, setColor] = React.useState("#ffffff");
+  const [shape, setShape] = React.useState(null);
+  const [shapeColor, setShapeColor] = React.useState("#000000"); // Shape color state
+  const [container, setContainer] = React.useState(null);
+  const [containerPath, setContainerPath] = React.useState("");
+  const [containerViewBox, setContainerViewBox] = React.useState("");
 
   return (
     <Router>
       <Routes>
-        {/* Home route */}
         <Route path="/" element={<Home />} />
-
-        {/* Flavor selection route */}
         <Route
           path="/flavor"
           element={<FlavorPage flavor={flavor} setFlavor={setFlavor} />}
         />
-
-        {/* Color selection route */}
         <Route
           path="/color"
           element={<ColorPage color={color} setColor={setColor} />}
         />
-
-        {/* Shape selection route */}
         <Route
           path="/shape"
-          element={<ShapePage shape={shape} setShape={setShape} />}
+          element={
+            <ShapePage
+              shape={shape}
+              setShape={setShape}
+              shapeColor={shapeColor}
+              setShapeColor={setShapeColor} // Pass shape color setter
+            />
+          }
         />
-
-        {/* Container selection route */}
         <Route
           path="/container"
           element={
             <ContainerPage
-              setContainer={setContainer} // Pass the state setter
-              setContainerPath={setContainerPath} // Pass the setter for SVG path
+              setContainer={setContainer}
+              setContainerPath={setContainerPath}
               setContainerViewBox={setContainerViewBox}
-              color={color} // Pass selected color to ContainerPage
+              color={color}
             />
           }
         />
-
-        {/* Result route */}
         <Route
           path="/result"
           element={
             <ResultContainer
               flavor={flavor}
-              color={color} // Pass selected color to result
+              color={color}
               shape={shape}
-              container={container} // Pass entire selected container object
-              containerPath={containerPath} // Pass the SVG path to result
+              shapeColor={shapeColor} // Pass the shape's color
+              container={container}
+              containerPath={containerPath}
               containerViewBox={containerViewBox}
             />
           }
         />
-
-        {/* Feedback route */}
         <Route path="/feedback" element={<FeedbackCard />} />
-
-        {/* Thank You page route */}
         <Route path="/thankyou" element={<ThankYou />} />
       </Routes>
     </Router>
