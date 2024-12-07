@@ -5,6 +5,7 @@ import shapes from "../assets/shapes/shapes"; // Import the shapes array
 
 const ResultContainer = ({
   shape,
+  shapeColor,
   color,
   container,
   flavor,
@@ -46,7 +47,7 @@ const ResultContainer = ({
             />
 
             {/* Render the pattern */}
-            {selectedShape.Component && containerPath && containerViewBox && (
+            {selectedShape?.Component && containerPath && containerViewBox && (
               <svg
                 className="absolute inset-0 z-20 w-full h-full"
                 xmlns="http://www.w3.org/2000/svg"
@@ -66,6 +67,7 @@ const ResultContainer = ({
                     <selectedShape.Component
                       width={patternSize}
                       height={patternSize}
+                      fill={shapeColor} // Dynamically set the shape color
                     />
                   </pattern>
 

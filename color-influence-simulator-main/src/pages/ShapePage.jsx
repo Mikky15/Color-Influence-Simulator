@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChromePicker } from "react-color";
 import { swirlingLogo } from "../assets";
-import PatternOverlay from "./PatternOverlay"; // Updated
 import shapes from "../assets/shapes/shapes"; // Import shapes.js
 
-const ShapeSelector = ({ shape, setShape }) => {
+const ShapeSelector = ({ shape, setShape, shapeColor, setShapeColor }) => {
   const [selectedShape, setSelectedShape] = useState(shape || null);
   const navigate = useNavigate();
 
@@ -13,7 +13,10 @@ const ShapeSelector = ({ shape, setShape }) => {
     setShape(Number(shapeId)); // Update the parent state
   };
 
-  // Find the selected component based on the shapeId
+  const handleColorChange = (updatedColor) => {
+    setShapeColor(updatedColor.hex); // Update color in the parent component
+  };
+
   const selectedComponent = shapes.find(
     (shape) => shape.id === selectedShape
   )?.Component;
@@ -22,7 +25,7 @@ const ShapeSelector = ({ shape, setShape }) => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
       <img src={swirlingLogo} width={120} alt="Logo" className="rounded-xl" />
       <h1 className="text-3xl font-extrabold mb-4 text-center">
-        Choose a Shape
+        Choose a Shape and Color
       </h1>
 
       {/* Shape selection buttons */}
@@ -39,21 +42,29 @@ const ShapeSelector = ({ shape, setShape }) => {
             aria-label={`Select Shape ${id}`}
           >
             {/* Render the shape component as the button content */}
-            <Component width={60} height={60} />
+            <Component width={60} height={60} fill={shapeColor} />
           </button>
         ))}
       </div>
 
-      {/* Display selected shape */}
-      <div className="mt-6 p-6 rounded-lg bg-gray-900 shadow-lg flex items-center justify-center w-full max-w-xs">
-        {selectedComponent ? (
-          <div className="relative w-40 h-40">
-            <PatternOverlay ShapeComponent={selectedComponent} />
-          </div>
-        ) : (
-          <p className="text-gray-400">No shape selected</p>
-        )}
-      </div>
+      {/* Color Picker */}
+      {selectedComponent && (
+        <div className="mt-6 flex flex-col items-center">
+          <h2 className="text-xl font-semibold mb-2">Pick a Color</h2>
+          <ChromePicker
+            color={shapeColor}
+            onChange={handleColorChange}
+            className="shadow-lg rounded-md"
+          />
+        </div>
+      )}
+
+      {/* Display message when no shape is selected */}
+      {!selectedComponent && (
+        <p className="text-gray-400 mt-6">
+          No shape selected
+        </p>
+      )}
 
       {/* Next button */}
       <button
@@ -62,7 +73,7 @@ const ShapeSelector = ({ shape, setShape }) => {
             ? "bg-green-600 text-white hover:bg-green-700"
             : "bg-gray-500 text-gray-300 cursor-not-allowed"
         }`}
-        onClick={() => navigate("/container", { state: { shape: selectedShape } })}
+        onClick={() => navigate("/container")}
         disabled={!selectedShape}
       >
         Next
