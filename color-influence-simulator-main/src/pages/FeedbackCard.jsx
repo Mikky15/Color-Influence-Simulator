@@ -3,15 +3,44 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 
 const FeedbackCard = () => {
   const [answer, setAnswer] = useState('');
+  const [error, setError] = useState(null); // Track errors
   const navigate = useNavigate(); // Initialize navigate
+
+  // Dynamic API URL from environment variables
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 
   const handleInputChange = (event) => {
     setAnswer(event.target.value);
   };
 
-  const handleSubmit = () => {
-    console.log('User Answer:', answer);
-    navigate('/thankyou'); // Navigate to the Thank You page after submission
+  const handleSubmit = async () => {
+    const newFeedback = {
+      answer: answer,
+      date: new Date().toISOString(),
+    };
+
+    try {
+      // Send feedback to the backend API to store it permanently
+      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newFeedback),
+      });
+
+      if (response.ok) {
+        console.log('Feedback stored:', newFeedback);
+        navigate('/thankyou'); // Navigate to the Thank You page after submission
+      } else {
+        const errorData = await response.json();
+        console.error('Error saving feedback:', errorData.error);
+        setError('Failed to save feedback. Please try again.');
+      }
+    } catch (networkError) {
+      console.error('Network error:', networkError);
+      setError('A network error occurred. Please check your connection and try again.');
+    }
   };
 
   return (
@@ -76,6 +105,12 @@ const FeedbackCard = () => {
           .feedback-button:hover {
             background-color: #00ccac; /* Slightly darker cyan */
           }
+
+          .feedback-error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+          }
         `}
       </style>
       <div className="feedback-card">
@@ -91,6 +126,7 @@ const FeedbackCard = () => {
         <button className="feedback-button" onClick={handleSubmit}>
           DONE
         </button>
+        {error && <p className="feedback-error">{error}</p>} {/* Show error message */}
       </div>
     </div>
   );
