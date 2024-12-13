@@ -10,6 +10,8 @@ import {
   ResultContainer,
   ShapePage,
   ThankYou,
+  AdminFeedback,
+  AdminLogin,
 } from "./pages";
 
 function App() {
@@ -71,6 +73,8 @@ function App() {
         />
         <Route path="/feedback" element={<FeedbackCard />} />
         <Route path="/thankyou" element={<ThankYou />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/admin-feedback" element={<AdminFeedback />} />
       </Routes>
     </Router>
   );
