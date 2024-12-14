@@ -73,7 +73,7 @@ function App() {
         />
         <Route path="/feedback" element={<FeedbackCard />} />
         <Route path="/thankyou" element={<ThankYou />} />
-        <Route path="/login" element={<AdminLogin />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-feedback" element={<AdminFeedback />} />
       </Routes>
     </Router>

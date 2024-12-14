@@ -17,7 +17,10 @@ let client;
 
 async function connectDB() {
   if (!client) {
-    client = new MongoClient(uri); // Removed deprecated options
+    client = new MongoClient(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     try {
       await client.connect();
     } catch (err) {

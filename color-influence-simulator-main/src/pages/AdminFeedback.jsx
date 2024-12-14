@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 
 const AdminFeedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -10,7 +10,7 @@ const AdminFeedback = () => {
 
   useEffect(() => {
     // Fetch feedbacks from the server
-    fetch(`${API_BASE_URL}/api/feedback`)
+    fetch(`${API_BASE_URL}/api/feedbacks`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
