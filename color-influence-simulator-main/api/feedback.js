@@ -10,6 +10,7 @@ app.use(cors()); // Enable CORS for all origins (adjust for security as needed)
 
 // MongoDB URI from the environment variable
 const uri = process.env.MONGODB_URI;
+console.log(`MongoDB URI: ${uri}`); // Log the URI to verify it's correctly set
 
 // MongoDB client instance
 let client;
@@ -20,7 +21,12 @@ async function connectDB() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    await client.connect();
+    try {
+      await client.connect();
+    } catch (err) {
+      console.error('MongoDB connection error:', err); // Log connection errors
+      throw err;
+    }
   }
   return client;
 }
@@ -41,6 +47,7 @@ app.post('/api/feedback', async (req, res) => {
     await feedbacksCollection.insertOne({ answer, date });
     res.status(200).json({ message: 'Feedback saved successfully' });
   } catch (err) {
+    console.error('Error saving feedback:', err); // Log error to console
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -54,6 +61,7 @@ app.get('/api/feedback', async (req, res) => {
     const feedbacks = await feedbacksCollection.find().toArray();
     res.status(200).json(feedbacks);
   } catch (err) {
+    console.error('Error fetching feedbacks:', err); // Log error to console
     res.status(500).json({ error: 'Internal server error' });
   }
 });

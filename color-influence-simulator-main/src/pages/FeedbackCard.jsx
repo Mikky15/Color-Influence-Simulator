@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate hook
+import { useNavigate } from "react-router-dom";
 
 const FeedbackCard = () => {
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState(null); // Track errors
   const [loading, setLoading] = useState(false); // Track loading state
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   // Dynamic API URL from environment variables
   const API_BASE_URL =
@@ -30,7 +30,7 @@ const FeedbackCard = () => {
     setLoading(true); // Set loading state
 
     try {
-      const response = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/api/feedback`, {
+      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,7 +38,6 @@ const FeedbackCard = () => {
         body: JSON.stringify(newFeedback),
       });
 
-      // Check if response is JSON
       const isJson = response.headers
         .get("content-type")
         ?.includes("application/json");
