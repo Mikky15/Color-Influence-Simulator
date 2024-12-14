@@ -6,7 +6,7 @@ const AdminFeedback = () => {
   const [loading, setLoading] = useState(true); // State to track loading
 
   // Dynamic API URL based on environment
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
   useEffect(() => {
     // Fetch feedbacks from the server
