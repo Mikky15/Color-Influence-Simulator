@@ -30,7 +30,7 @@ const FeedbackCard = () => {
     setLoading(true); // Set loading state
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
+      const response = await fetch(`${API_BASE_URL.replace(/\/$/, '')}/api/feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
