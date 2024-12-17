@@ -58,26 +58,9 @@ const ResultContainer = ({
     try {
       // Convert the container to a Base64 image
       const imageData = await toPng(containerRef.current);
-
-      // Post the image data to the backend
-      const response = await fetch(`${validatedApiUrl}/api/feedback`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ image: imageData }), // Only sending the image
-      });
-
-      if (response.ok) {
-        console.log("Image saved successfully");
-        navigate("/feedback");
-      } else {
-        const errorData = await response.json();
-        console.error("Failed to save image:", errorData.message || response.statusText);
-        setErrorMessage(
-          errorData.message || "An error occurred while saving the image."
-        );
-      }
+      
+      // Pass the image data directly to navigate
+      navigate("/feedback", { state: { savedImage: imageData, flavor, color } });
     } catch (err) {
       console.error("Error saving image:", err.message);
       setErrorMessage("Unexpected error occurred. Please try again.");

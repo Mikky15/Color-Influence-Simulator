@@ -1,7 +1,8 @@
-require('dotenv').config(); // Load environment variables from .env file
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const express = require('express');
+const { Buffer } = require('buffer');
+require('dotenv').config();
 
 // Create Express app
 const app = express();
@@ -41,8 +42,20 @@ app.post('/api/feedback', async (req, res) => {
     return res.status(400).json({ error: 'Answer must be a valid non-empty string' });
   }
 
-  if (image && (!image.startsWith('http') || !/\.(jpg|jpeg|png|gif)$/i.test(image))) {
-    return res.status(400).json({ error: 'Image must be a valid URL pointing to an image file' });
+  let imageData = null;
+  if (image) {
+    // Validate and decode Base64 image
+    if (image.startsWith('data:image')) {
+      const matches = image.match(/^data:image\/([a-zA-Z]*);base64,([^\\"]+)$/);
+      if (matches && matches.length === 3) {
+        const buffer = Buffer.from(matches[2], 'base64');
+        imageData = buffer;
+      } else {
+        return res.status(400).json({ error: 'Invalid Base64 image format' });
+      }
+    } else {
+      return res.status(400).json({ error: 'Image must be a valid Base64 string' });
+    }
   }
 
   // Validate the date string and parse it
@@ -56,8 +69,8 @@ app.post('/api/feedback', async (req, res) => {
     date: parsedDate, // Ensure date is valid
   };
 
-  if (image) {
-    feedbackData.image = image.trim();
+  if (imageData) {
+    feedbackData.image = imageData; // Save the image as binary data
   }
 
   try {
@@ -80,9 +93,19 @@ app.get('/api/feedback', async (req, res) => {
     const feedbacksCollection = dbClient.db('feedbackDB').collection('feedbacks');
 
     const feedbacks = await feedbacksCollection.find().toArray();
-    res.status(200).json(feedbacks);
+
+    // Return feedbacks with images as Base64 (if available)
+    const formattedFeedbacks = feedbacks.map((feedback) => {
+      if (feedback.image) {
+        // Convert image binary to Base64 string
+        feedback.image = `data:image/jpeg;base64,${feedback.image.toString('base64')}`;
+      }
+      return feedback;
+    });
+
+    res.status(200).json(formattedFeedbacks);
   } catch (err) {
-    console.error('Error fetching feedbacks:', err); // Log error to console
+    console.error('Error fetching feedbacks:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

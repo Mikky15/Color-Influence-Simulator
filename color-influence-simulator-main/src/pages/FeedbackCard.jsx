@@ -1,11 +1,19 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const FeedbackCard = () => {
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState(null); // Track errors
   const [loading, setLoading] = useState(false); // Track loading state
+  const [savedImage, setSavedImage] = useState(null); // State to hold saved image data
+  const { state } = useLocation(); // Access state passed from ResultContainer
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state && state.savedImage) {
+      setSavedImage(state.savedImage); // Set saved image from state
+    }
+  }, [state]);
 
   // Dynamic API URL from environment variables
   const API_BASE_URL =
@@ -24,6 +32,7 @@ const FeedbackCard = () => {
     const newFeedback = {
       answer: answer.trim(),
       date: new Date().toISOString(),
+      image: savedImage, // Add saved image data to feedback
     };
 
     setError(null); // Reset any existing error
@@ -137,12 +146,19 @@ const FeedbackCard = () => {
             margin-top: 10px;
             font-size: 14px;
           }
+          .feedback-img {
+            max-width: 100%;
+            margin-bottom: 20px;
+          }
         `}
       </style>
       <div className="feedback-card">
         <p className="feedback-question">
           What is it about this product that represents your flavor?
         </p>
+        {savedImage && (
+          <img src={savedImage} alt="User design" className="feedback-img" />
+        )}
         <textarea
           className="feedback-input"
           value={answer}
