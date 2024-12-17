@@ -10,7 +10,9 @@ app.use(cors()); // Enable CORS for all origins (adjust for security as needed)
 
 // MongoDB URI from the environment variable
 const uri = process.env.MONGODB_URI;
-console.log(`MongoDB URI: ${uri}`); // Log the URI to verify it's correctly set
+if (process.env.NODE_ENV !== 'production') {
+  console.log(`MongoDB URI: ${uri}`); // Log the URI only in non-production environments
+}
 
 // MongoDB client instance
 let client;
@@ -20,6 +22,7 @@ async function connectDB() {
     client = new MongoClient(uri); // Removed deprecated options
     try {
       await client.connect();
+      console.log('Connected to MongoDB');
     } catch (err) {
       console.error('MongoDB connection error:', err); // Log connection errors
       throw err;
@@ -33,18 +36,30 @@ app.post('/api/feedback', async (req, res) => {
   const { answer, image, date } = req.body;
 
   // Input validation
-  if (!answer || !date || !image) {
-    return res
-      .status(400)
-      .json({ error: 'Answer, image, and date are required' });
+  if (!answer || !image || !date) {
+    return res.status(400).json({ error: 'Answer, image, and date are required' });
   }
+
+  if (typeof answer !== 'string' || !answer.trim()) {
+    return res.status(400).json({ error: 'Answer must be a valid non-empty string' });
+  }
+
+  if (!image.startsWith('http') || !/\.(jpg|jpeg|png|gif)$/i.test(image)) {
+    return res.status(400).json({ error: 'Image must be a valid URL pointing to an image file' });
+  }
+
+  const feedbackData = {
+    answer: answer.trim(),
+    image: image.trim(),
+    date: new Date(date), // Ensure date is properly parsed
+  };
 
   try {
     const dbClient = await connectDB();
     const feedbacksCollection = dbClient.db('feedbackDB').collection('feedbacks');
 
     // Save the feedback with answer, image, and date
-    await feedbacksCollection.insertOne({ answer, image, date });
+    await feedbacksCollection.insertOne(feedbackData);
     res.status(200).json({ message: 'Feedback saved successfully' });
   } catch (err) {
     console.error('Error saving feedback:', err); // Log error to console

@@ -38,26 +38,22 @@ const ResultContainer = ({
       // Convert the container to a Base64 image
       const imageData = await toPng(containerRef.current);
 
-      // Post the image and flavor data to the backend
+      // Post the image data to the backend
       const response = await fetch(`${API_BASE_URL}/api/feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          image: imageData,
-          flavor,
-          date: new Date().toISOString(),
-        }),
+        body: JSON.stringify({ image: imageData }), // Only sending the image
       });
 
       if (response.ok) {
-        console.log("Design saved successfully");
+        console.log("Image saved successfully");
       } else {
-        console.error("Failed to save design");
+        console.error("Failed to save image");
       }
     } catch (err) {
-      console.error("Error saving design:", err);
+      console.error("Error saving image:", err);
     }
 
     // Navigate to the feedback page after saving
