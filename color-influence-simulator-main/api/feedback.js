@@ -1,7 +1,7 @@
 require('dotenv').config(); // Load environment variables from .env file
-const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
+const express = require('express');
 
 // Create Express app
 const app = express();
@@ -10,16 +10,13 @@ app.use(cors()); // Enable CORS for all origins (adjust for security as needed)
 
 // MongoDB URI from the environment variable
 const uri = process.env.MONGODB_URI;
-if (process.env.NODE_ENV !== 'production') {
-  console.log(`MongoDB URI: ${uri}`); // Log the URI only in non-production environments
-}
 
 // MongoDB client instance
 let client;
 
 async function connectDB() {
   if (!client) {
-    client = new MongoClient(uri); // Removed deprecated options
+    client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
     try {
       await client.connect();
       console.log('Connected to MongoDB');
@@ -36,29 +33,38 @@ app.post('/api/feedback', async (req, res) => {
   const { answer, image, date } = req.body;
 
   // Input validation
-  if (!answer || !image || !date) {
-    return res.status(400).json({ error: 'Answer, image, and date are required' });
+  if (!answer || !date) {
+    return res.status(400).json({ error: 'Answer and date are required' });
   }
 
   if (typeof answer !== 'string' || !answer.trim()) {
     return res.status(400).json({ error: 'Answer must be a valid non-empty string' });
   }
 
-  if (!image.startsWith('http') || !/\.(jpg|jpeg|png|gif)$/i.test(image)) {
+  if (image && (!image.startsWith('http') || !/\.(jpg|jpeg|png|gif)$/i.test(image))) {
     return res.status(400).json({ error: 'Image must be a valid URL pointing to an image file' });
+  }
+
+  // Validate the date string and parse it
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) {
+    return res.status(400).json({ error: 'Invalid date format' });
   }
 
   const feedbackData = {
     answer: answer.trim(),
-    image: image.trim(),
-    date: new Date(date), // Ensure date is properly parsed
+    date: parsedDate, // Ensure date is valid
   };
+
+  if (image) {
+    feedbackData.image = image.trim();
+  }
 
   try {
     const dbClient = await connectDB();
     const feedbacksCollection = dbClient.db('feedbackDB').collection('feedbacks');
 
-    // Save the feedback with answer, image, and date
+    // Save the feedback with answer, optional image, and date
     await feedbacksCollection.insertOne(feedbackData);
     res.status(200).json({ message: 'Feedback saved successfully' });
   } catch (err) {
@@ -81,10 +87,5 @@ app.get('/api/feedback', async (req, res) => {
   }
 });
 
-// Start the server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-module.exports = app; // Ensure compatibility with Vercel's serverless functions
+// Vercel uses a serverless function, so we export the app
+module.exports = app; // This will allow Vercel to run it as a function

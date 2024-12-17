@@ -157,7 +157,8 @@ const FeedbackCard = () => {
         >
           {loading ? "Submitting..." : "DONE"}
         </button>
-        {error && <p className="feedback-error">{error}</p>} {/* Show error message */}
+        {error && <p className="feedback-error">{error}</p>}{" "}
+        {/* Show error message */}
       </div>
     </div>
   );
