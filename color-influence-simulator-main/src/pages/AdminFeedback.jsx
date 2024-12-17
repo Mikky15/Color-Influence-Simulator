@@ -65,6 +65,8 @@ const AdminFeedback = () => {
           }
 
           .feedback-item {
+            display: flex;
+            flex-direction: column;
             background-color: #fff;
             border: 1px solid #ddd;
             border-radius: 10px;
@@ -73,13 +75,38 @@ const AdminFeedback = () => {
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
           }
 
-          .feedback-item p {
-            margin: 0 0 10px;
+          .feedback-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 10px;
+          }
+
+          .feedback-content {
+            flex: 1;
           }
 
           .feedback-date {
             font-size: 14px;
             color: #888;
+          }
+
+          /* Media Query for larger screens */
+          @media (min-width: 768px) {
+            .feedback-item {
+              flex-direction: row;
+              align-items: center;
+            }
+
+            .feedback-image {
+              max-width: 150px;
+              margin-right: 20px;
+              margin-bottom: 0; /* Remove bottom margin for larger screens */
+            }
+
+            .feedback-content {
+              flex: 1;
+            }
           }
         `}
       </style>
@@ -96,10 +123,18 @@ const AdminFeedback = () => {
           ) : (
             feedbacks.map((feedback, index) => (
               <li key={index} className="feedback-item">
-                <p>{feedback.answer}</p>
-                <p className="feedback-date">
-                  <strong>Date:</strong> {new Date(feedback.date).toLocaleDateString()}
-                </p>
+                <img 
+                  src={feedback.image} 
+                  alt="Feedback" 
+                  className="feedback-image"
+                />
+                <div className="feedback-content">
+                  <p>{feedback.answer}</p>
+                  <p className="feedback-date">
+                    <strong>Date:</strong> {new Date(feedback.date).toLocaleDateString()} 
+                    <strong> Time:</strong> {new Date(feedback.date).toLocaleTimeString()}
+                  </p>
+                </div>
               </li>
             ))
           )}

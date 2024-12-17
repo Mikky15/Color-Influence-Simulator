@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { toPng } from "html-to-image"; // Import html-to-image
 import { swirlingLogo } from "../assets";
 import shapes from "../assets/shapes/shapes"; // Import the shapes array
 
@@ -14,6 +15,10 @@ const ResultContainer = ({
 }) => {
   const [patternSize, setPatternSize] = useState(20); // Initial pattern size
   const navigate = useNavigate(); // Initialize navigate
+  const containerRef = useRef(null); // Reference for container div
+
+  // Dynamic API base URL
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
 
   // If shape is null, do not try to find a shape.
   const selectedShape = shape
@@ -25,8 +30,37 @@ const ResultContainer = ({
     setPatternSize(newSize); // Update the pattern size state
   };
 
-  // Function to navigate to the feedback page
-  const navigateToFeedback = () => {
+  // Function to save the design and navigate to the feedback page
+  const handleSaveAndNavigate = async () => {
+    if (!containerRef.current) return;
+
+    try {
+      // Convert the container to a Base64 image
+      const imageData = await toPng(containerRef.current);
+
+      // Post the image and flavor data to the backend
+      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: imageData,
+          flavor,
+          date: new Date().toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Design saved successfully");
+      } else {
+        console.error("Failed to save design");
+      }
+    } catch (err) {
+      console.error("Error saving design:", err);
+    }
+
+    // Navigate to the feedback page after saving
     navigate("/feedback");
   };
 
@@ -37,7 +71,7 @@ const ResultContainer = ({
         Look at your amazing <br /> Yogurt Container
       </h1>
 
-      <div className="relative mt-8 w-64 h-64">
+      <div ref={containerRef} className="relative mt-8 w-64 h-64">
         {/* Render the selected container with dynamic color */}
         {container && container.Component ? (
           <div className="absolute w-full h-full z-10">
@@ -148,7 +182,7 @@ const ResultContainer = ({
         </a>
         <button
           className="bg-cyan-500 mt-4 px-10 py-3 text-white rounded-full"
-          onClick={navigateToFeedback}
+          onClick={handleSaveAndNavigate}
         >
           YES
         </button>

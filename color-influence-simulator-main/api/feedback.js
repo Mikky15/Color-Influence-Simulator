@@ -30,18 +30,21 @@ async function connectDB() {
 
 // POST endpoint to receive feedback and save it to MongoDB
 app.post('/api/feedback', async (req, res) => {
-  const { answer, date } = req.body;
+  const { answer, image, date } = req.body;
 
   // Input validation
-  if (!answer || !date) {
-    return res.status(400).json({ error: 'Answer and date are required' });
+  if (!answer || !date || !image) {
+    return res
+      .status(400)
+      .json({ error: 'Answer, image, and date are required' });
   }
 
   try {
     const dbClient = await connectDB();
     const feedbacksCollection = dbClient.db('feedbackDB').collection('feedbacks');
 
-    await feedbacksCollection.insertOne({ answer, date });
+    // Save the feedback with answer, image, and date
+    await feedbacksCollection.insertOne({ answer, image, date });
     res.status(200).json({ message: 'Feedback saved successfully' });
   } catch (err) {
     console.error('Error saving feedback:', err); // Log error to console
