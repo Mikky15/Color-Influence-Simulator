@@ -14,11 +14,24 @@ const ResultContainer = ({
   containerViewBox,
 }) => {
   const [patternSize, setPatternSize] = useState(20); // Initial pattern size
+  const [errorMessage, setErrorMessage] = useState(null); // Error state for feedback
   const navigate = useNavigate(); // Initialize navigate
   const containerRef = useRef(null); // Reference for container div
 
   // Dynamic API base URL
   const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
+
+  // Validate API base URL
+  const validateApiUrl = (url) => {
+    try {
+      return new URL(url).href;
+    } catch (error) {
+      console.error("Invalid API URL:", error.message);
+      return null;
+    }
+  };
+
+  const validatedApiUrl = validateApiUrl(API_BASE_URL);
 
   // If shape is null, do not try to find a shape.
   const selectedShape = shape
@@ -27,19 +40,27 @@ const ResultContainer = ({
 
   // Function to handle pattern resizing
   const handleResizePattern = (newSize) => {
-    setPatternSize(newSize); // Update the pattern size state
+    setPatternSize(Math.max(5, newSize)); // Ensure the pattern size is not negative
   };
 
   // Function to save the design and navigate to the feedback page
   const handleSaveAndNavigate = async () => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      setErrorMessage("No container reference found.");
+      return;
+    }
+
+    if (!validatedApiUrl) {
+      setErrorMessage("Invalid API URL. Please check the environment variables.");
+      return;
+    }
 
     try {
       // Convert the container to a Base64 image
       const imageData = await toPng(containerRef.current);
 
       // Post the image data to the backend
-      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
+      const response = await fetch(`${validatedApiUrl}/api/feedback`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,15 +70,18 @@ const ResultContainer = ({
 
       if (response.ok) {
         console.log("Image saved successfully");
+        navigate("/feedback");
       } else {
-        console.error("Failed to save image");
+        const errorData = await response.json();
+        console.error("Failed to save image:", errorData.message || response.statusText);
+        setErrorMessage(
+          errorData.message || "An error occurred while saving the image."
+        );
       }
     } catch (err) {
-      console.error("Error saving image:", err);
+      console.error("Error saving image:", err.message);
+      setErrorMessage("Unexpected error occurred. Please try again.");
     }
-
-    // Navigate to the feedback page after saving
-    navigate("/feedback");
   };
 
   return (
@@ -124,6 +148,13 @@ const ResultContainer = ({
         )}
       </div>
 
+      {/* Display error message if any */}
+      {errorMessage && (
+        <div className="mt-4 p-4 bg-red-600 text-white rounded">
+          {errorMessage}
+        </div>
+      )}
+
       {/* Resize pattern controls */}
       <div className="mt-8 flex flex-col items-center space-y-4">
         <h3 className="text-lg">Resize Pattern</h3>
@@ -168,6 +199,7 @@ const ResultContainer = ({
         </p>
       </div>
 
+      {/* Action buttons */}
       <div className="py-10">
         <h1>Are you happy with your design?</h1>
       </div>

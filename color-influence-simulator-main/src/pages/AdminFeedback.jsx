@@ -123,6 +123,7 @@ const AdminFeedback = () => {
           ) : (
             feedbacks.map((feedback, index) => (
               <li key={index} className="feedback-item">
+                {/* Display the Base64 image string */}
                 <img 
                   src={feedback.image} 
                   alt="Feedback" 
