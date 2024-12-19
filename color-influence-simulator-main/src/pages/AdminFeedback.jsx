@@ -110,6 +110,13 @@ const AdminFeedback = () => {
             line-height: 1.6;
           }
 
+          .feedback-flavor {
+            font-size: 16px;
+            color: #333;
+            font-style: italic;
+            margin-top: 10px;
+          }
+
           /* Responsive Design for larger screens */
           @media (min-width: 768px) {
             .feedback-item {
@@ -153,6 +160,12 @@ const AdminFeedback = () => {
 
                 <div className="feedback-content">
                   <p className="feedback-answer">{feedback.answer}</p>
+                  {/* Display flavor if available */}
+                  {feedback.flavor && (
+                    <p className="feedback-flavor">
+                      <strong>Flavor:</strong> {feedback.flavor}
+                    </p>
+                  )}
                   <p className="feedback-date">
                     <strong>Date:</strong>{" "}
                     {new Date(feedback.date).toLocaleDateString()} <br />

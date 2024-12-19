@@ -33,6 +33,7 @@ const FeedbackCard = () => {
       answer: answer.trim(),
       date: new Date().toISOString(),
       image: savedImage, // Add saved image data to feedback
+      flavor: state?.flavor, // Include the flavor data from the state
     };
 
     setError(null); // Reset any existing error
