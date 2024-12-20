@@ -14,6 +14,8 @@ module.exports = {
           light: "#FF8A65", // Lighter shade
           dark: "#D84315", // Darker shade
         },
+        customAqua: '#00e6c3',
+        customDarkAqua: '#00ccac',
       },
     },
   },

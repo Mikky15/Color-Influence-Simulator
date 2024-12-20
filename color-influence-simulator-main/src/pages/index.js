@@ -8,3 +8,4 @@ export { default as ThankYou } from "./ThankYou";
 export { default as FeedbackCard } from "./FeedbackCard";
 export { default as AdminFeedback } from "./AdminFeedback";
 export { default as AdminLogin } from "./AdminLogin";
+export { default as Consent } from "./Consent";

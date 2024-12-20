@@ -12,6 +12,7 @@ import {
   ThankYou,
   AdminFeedback,
   AdminLogin,
+  Consent,
 } from "./pages";
 
 function App() {
@@ -22,11 +23,18 @@ function App() {
   const [container, setContainer] = React.useState(null);
   const [containerPath, setContainerPath] = React.useState("");
   const [containerViewBox, setContainerViewBox] = React.useState("");
+  const [consentAccepted, setConsentAccepted] = React.useState(false);
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* Pass both isChecked and setConsentAccepted to Home */}
+        <Route
+          path="/"
+          element={
+            <Home isChecked={consentAccepted} setConsentAccepted={setConsentAccepted} />
+          }
+        />
         <Route
           path="/flavor"
           element={<FlavorPage flavor={flavor} setFlavor={setFlavor} />}
@@ -70,6 +78,11 @@ function App() {
               containerViewBox={containerViewBox}
             />
           }
+        />
+        {/* Pass setConsentAccepted to Consent */}
+        <Route
+          path="/consent"
+          element={<Consent setConsentAccepted={setConsentAccepted} />}
         />
         <Route path="/feedback" element={<FeedbackCard />} />
         <Route path="/thankyou" element={<ThankYou />} />
